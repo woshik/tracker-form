@@ -122,7 +122,7 @@ class Form extends MY_Controller
 			$params = array(
 				'file' => $rootDOC . '/upload/pdf/IMEI-' . $this->input->post('imei_code') . '.pdf',
 				'filename' => 'IMEI-' . $this->input->post('imei_code') . '.pdf',
-				'mimetype' => mime_content_type($filepath),
+				'mimetype' => 'application/pdf',
 				'data' => chunk_split(base64_encode(file_get_contents($filepath)))
 			);
 
@@ -302,18 +302,17 @@ class Form extends MY_Controller
 			$success = false;
 		}
 
+		$this->email->from($configFile['smtp_user'], 'Rental Tracker');
+		$this->email->to('info@rentaltracker.nl');
+		$this->email->subject('IMEI-' . $this->input->post('imei_code'));
+		$this->email->attach($rootDOC . '/upload/pdf/IMEI-' . $this->input->post('imei_code') . '.pdf');
 
-		// $this->email->from($configFile['smtp_user'], 'Rental Tracker');
-		// $this->email->to('info@rentaltracker.nl');
-		// $this->email->subject('IMEI-' . $this->input->post('imei_code'));
-		// $this->email->attach($rootDOC . '/upload/pdf/IMEI-' . $this->input->post('imei_code') . '.pdf');
 
-
-		// if ($this->email->send(FALSE)) {
-		// 	$success = true;
-		// } else {
-		// 	$success = false;
-		// }
+		if ($this->email->send(FALSE)) {
+			$success = true;
+		} else {
+			$success = false;
+		}
 
 		return $success;
 	}
