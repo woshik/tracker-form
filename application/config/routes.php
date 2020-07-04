@@ -55,6 +55,8 @@ $route['translate_uri_dashes'] = FALSE;
 
 $route['^en/(.+)$'] = "$1";
 $route['^nl/(.+)$'] = "$1";
+$route['^de/(.+)$'] = "$1";
 
 $route['^en$'] = $route['default_controller'];
 $route['^nl$'] = $route['default_controller'];
+$route['^de$'] = $route['default_controller'];

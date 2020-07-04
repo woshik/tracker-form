@@ -41,7 +41,7 @@
                 <a href="<?= base_url($lang) ?>"><img src="<?= base_url('/assets/images/Rental-Tracker-logo.png') ?>"></a>
             </nav>
         </header>
-        <div id="server-message" style="opacity: 0;"></div>
+        <div id="server-message" style="-webkit-transform: translateX(300px);-moz-transform: translateX(300px);-ms-transform: translateX(300px);-o-transform: translateX(300px);transform: translateX(300px);"></div>
         <div class="container-contact100">
             <div class="wrap-contact100">
                 <?= form_open($lang . '/form/submit', ['class' => 'contact100-form', 'id' => 'installation-form']); ?>
@@ -104,14 +104,14 @@
                 </div>
 
                 <div class="wrap-input100 validate-input">
-                    <label class="label-input100" for="imei_code"><?= $type_your_imei_or_activation_code ?> (<?= $required ?>)</label>
+                    <label class="label-input100" for="imei_code"><?= $scan_your_imei_or_activation_code ?> (<?= $required ?>)</label>
                     <img src="<?= base_url('/assets/images/qr-code.svg') ?>" alt="QRcode scanner" class="qr-image" onclick="startCam(this)" />
                     <input class="input100" type="text" name="imei_code" id="imei_code" placeholder="<?= $imei_or_activation_code ?>" autocomplete="off">
                     <span class="focus-input100"></span>
                 </div>
 
                 <div class="wrap-input100 validate-input input100-select">
-                    <label class="label-input100" for="start_block"><?= $start_block ?></label>
+                    <label class="label-input100" for="start_block"><?= $start_block ?> (<?= $required ?>)</label>
                     <div>
                         <select class="selection-2" name="start_block" id="start_block">
                             <option value="---" selected>---</option>
@@ -148,12 +148,12 @@
 
     <select style="display: none;" id="camera-select"></select>
 
-    <script src="<?= base_url('/assets/js/jquery-3.5.1.min.js') ?>"></script>
-    <script src="<?= base_url('/assets/js/lib/qrcodelib.js') ?>"></script>
-    <script src="<?= base_url('/assets/js/lib/webcodecamjs.js') ?>"></script>
-    <script src="<?= base_url('/assets/js/lib/quagga.min.js') ?>"></script>
-    <script src="<?= base_url('/assets/js/main.js') ?>"></script>
-    <script src="<?= base_url('/assets/js/bar-qr-code-scanner.js') ?>"></script>
+    <script src="<?= base_url('/assets/js/jquery-3.5.1.min.js') ?>" defer></script>
+    <script src="<?= base_url('/assets/js/lib/qrcodelib.js') ?>" defer></script>
+    <script src="<?= base_url('/assets/js/lib/webcodecamjs.js') ?>" defer></script>
+    <script src="<?= base_url('/assets/js/lib/quagga.min.js') ?>" defer></script>
+    <script src="<?= base_url('/assets/js/main.js') ?>" defer></script>
+    <script src="<?= base_url('/assets/js/bar-qr-code-scanner.js') ?>" defer></script>
 </body>
 
 </html>

@@ -11,7 +11,8 @@ class MY_Controller extends CI_Controller
 
         $lang = array(
             "en" => "english",
-            "nl" => "dutch"
+            "nl" => "dutch",
+            "de" => "german"
         );
 
         if (array_key_exists($this->uri->segment(1), $lang)) {
