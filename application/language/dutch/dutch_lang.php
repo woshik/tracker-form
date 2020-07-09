@@ -39,21 +39,21 @@ $lang['select'] = "Selecteer";
 $lang['is_not_valid'] = "is niet geldig";
 $lang['email_subject'] = "Nieuw inbouw formulier - IMEI-(%IMEI%) - (%LICENSE%)";
 $lang['email_body'] = "
-    Beste,\n\n
-    Er is een inbouwformulier ingevuld op https://rentaltracker.nl. In deze mail sturen wij u het inbouwformulier in PDF formaat op.\n
-    Met vriendelijke groet,\n
-    Rental Tracker\n\n
-    (%LANG_installation_company%): (%installation_company%)\n
-    (%LANG_engineer_name%)       : (%engineer_name%)\n
-    (%LANG_engineer_number%)     : (%engineer_number%)\n
-    (%LANG_email_address%)       : (%email_address%)\n
-    (%LANG_email_address_2%)     : (%email_address_2%)\n
-    (%LANG_company_name%)        : (%company_name%)\n
-    (%LANG_order_number%)        : (%order_number%)\n
-    (%LANG_license_plate%)       : (%license_plate%)\n
-    (%LANG_mileage%)             : (%mileage%)\n
-    (%LANG_imei_code%)           : (%imei_code%)\n
-    (%LANG_start_block%)         : (%start_block%)\n
-    (%LANG_tracker_placement%)   : (%tracker_placement%)\n
+Beste,\n
+Er is een inbouwformulier ingevuld op https://rentaltracker.nl. In deze mail sturen wij u het inbouwformulier in PDF formaat op.\n
+Met vriendelijke groet,
+Rental Tracker\n
+(%LANG_installation_company%): (%installation_company%)
+(%LANG_engineer_name%): (%engineer_name%)
+(%LANG_engineer_number%): (%engineer_number%)
+(%LANG_email_address%): (%email_address%)
+(%LANG_email_address_2%): (%email_address_2%)
+(%LANG_company_name%): (%company_name%)
+(%LANG_order_number%): (%order_number%)
+(%LANG_license_plate%): (%license_plate%)
+(%LANG_mileage%): (%mileage%)
+(%LANG_imei_code%): (%imei_code%)
+(%LANG_start_block%): (%start_block%)
+(%LANG_tracker_placement%): (%tracker_placement%)
 ";
 $lang['form_submit_message'] = "Uw vorige formulier is succesvol verzonden.";

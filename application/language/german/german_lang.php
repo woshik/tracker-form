@@ -38,23 +38,23 @@ $lang['select'] = "Wählen";
 $lang['is_not_valid'] = "ist nicht gültig";
 $lang['email_subject'] = "Neues Installationsformular - IMEI-(%IMEI%) - (%LICENSE%)";
 $lang['email_body'] = "
-    Hallo,\n\n
-    Ein eingebautes Formular wurde unter ausgefüllt. In dieser E-Mail senden wir Ihnen das Installationsformular im PDF-Format.\n\n
-    Mit freundlichen Grüßen,\n
-    Vermietung Tracker\n
-    https://rentaltracker.de\n\n
-    (%LANG_installation_company%): (%installation_company%)\n
-    (%LANG_engineer_name%)       : (%engineer_name%)\n
-    (%LANG_engineer_number%)     : (%engineer_number%)\n
-    (%LANG_email_address%)       : (%email_address%)\n
-    (%LANG_email_address_2%)     : (%email_address_2%)\n
-    (%LANG_company_name%)        : (%company_name%)\n
-    (%LANG_order_number%)        : (%order_number%)\n
-    (%LANG_license_plate%)       : (%license_plate%)\n
-    (%LANG_mileage%)             : (%mileage%)\n
-    (%LANG_imei_code%)           : (%imei_code%)\n
-    (%LANG_start_block%)         : (%start_block%)\n
-    (%LANG_tracker_placement%)   : (%tracker_placement%)\n
+Hallo,\n
+Ein eingebautes Formular wurde unter ausgefüllt. In dieser E-Mail senden wir Ihnen das Installationsformular im PDF-Format.\n
+Mit freundlichen Grüßen,
+Vermietung Tracker
+https://rentaltracker.de\n
+(%LANG_installation_company%): (%installation_company%)
+(%LANG_engineer_name%): (%engineer_name%)
+(%LANG_engineer_number%): (%engineer_number%)
+(%LANG_email_address%): (%email_address%)
+(%LANG_email_address_2%): (%email_address_2%)
+(%LANG_company_name%): (%company_name%)
+(%LANG_order_number%): (%order_number%)
+(%LANG_license_plate%): (%license_plate%)
+(%LANG_mileage%): (%mileage%)
+(%LANG_imei_code%): (%imei_code%)
+(%LANG_start_block%): (%start_block%)
+(%LANG_tracker_placement%): (%tracker_placement%)
 ";
 
 $lang['form_submit_message'] = "Ihr vorheriges Formular wurde erfolgreich gesendet.";
