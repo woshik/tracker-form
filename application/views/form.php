@@ -17,23 +17,10 @@
 </head>
 
 <body>
-    <div id="qrcode-barcode-wrapper">
-
+    <div id="qrcode-wrapper">
         <button class="close" onclick="stopCam()">X</button>
-
-        <div id="select-code-wrapper">
-            <label for="select-code-option"><?= $select_bra_qr_scanner ?></label>
-            <select id="select-code-option">
-                <option value="0">Select</option>
-                <option value="1">Bar Code</option>
-                <option value="2">QR Code</option>
-            </select>
-        </div>
-
-        <div id="barcode-canvas"></div>
-        <canvas id="qrcode-canvas"></canvas>
+        <div id="qr-reader"></div>
     </div>
-
 
     <div id="content-wrapper">
         <header>
@@ -45,6 +32,7 @@
         <div class="container-contact100">
             <div class="wrap-contact100">
                 <?= form_open($lang . '/form/submit', ['class' => 'contact100-form', 'id' => 'installation-form']); ?>
+                <div class="form-success-message" style="opacity: 0;"><?= $form_submit_message ?></div>
                 <span class="contact100-form-title ">
                     <?= $installation_form ?>
                 </span>
@@ -146,14 +134,10 @@
         </div>
     </div>
 
-    <select style="display: none;" id="camera-select"></select>
-
     <script src="<?= base_url('/assets/js/jquery-3.5.1.min.js') ?>" defer></script>
-    <script src="<?= base_url('/assets/js/lib/qrcodelib.js') ?>" defer></script>
-    <script src="<?= base_url('/assets/js/lib/webcodecamjs.js') ?>" defer></script>
-    <script src="<?= base_url('/assets/js/lib/quagga.min.js') ?>" defer></script>
+    <script src="<?= base_url('/assets/js/lib/html5-qrcode.min.js') ?>" defer></script>
     <script src="<?= base_url('/assets/js/main.js') ?>" defer></script>
-    <script src="<?= base_url('/assets/js/bar-qr-code-scanner.js') ?>" defer></script>
+    <script src="<?= base_url('/assets/js/qr-code-scanner.js') ?>" defer></script>
 </body>
 
 </html>

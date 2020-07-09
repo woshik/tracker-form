@@ -37,5 +37,25 @@ $lang['server_error'] = "Server error, Please try again";
 $lang['select_bra_qr_scanner'] = "Select Bar code / QR code Scanner";
 $lang['select'] = "Select";
 $lang['is_not_valid'] = "isn't valid";
-$lang['email_subject'] = "New installation form - (%IMEI%)";
-$lang['email_body'] = "Hi,\n\nA build-in form has been completed at . In this email we will send you the installation form in PDF format.\n\nSincerely,\nRental Tracker\nhttps://rentaltracker.eu";
+$lang['email_subject'] = "New installation form - IMEI-(%IMEI%) - (%LICENSE%)";
+$lang['email_body'] = "
+    Hi,\n\n
+    A build-in form has been completed at . In this email we will send you the installation form in PDF format.\n\n
+    Sincerely,\n
+    Rental Tracker\n
+    https://rentaltracker.eu\n\n
+    (%LANG_installation_company%): (%installation_company%)\n
+    (%LANG_engineer_name%)       : (%engineer_name%)\n
+    (%LANG_engineer_number%)     : (%engineer_number%)\n
+    (%LANG_email_address%)       : (%email_address%)\n
+    (%LANG_email_address_2%)     : (%email_address_2%)\n
+    (%LANG_company_name%)        : (%company_name%)\n
+    (%LANG_order_number%)        : (%order_number%)\n
+    (%LANG_license_plate%)       : (%license_plate%)\n
+    (%LANG_mileage%)             : (%mileage%)\n
+    (%LANG_imei_code%)           : (%imei_code%)\n
+    (%LANG_start_block%)         : (%start_block%)\n
+    (%LANG_tracker_placement%)   : (%tracker_placement%)\n
+";
+
+$lang['form_submit_message'] = "Your previous form has been sent successfully.";

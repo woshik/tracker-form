@@ -38,6 +38,7 @@ class Form extends MY_Controller
 		$data['important'] = $this->lang->line('important');
 		$data['select_bra_qr_scanner'] = $this->lang->line('select_bra_qr_scanner');
 		$data['select'] = $this->lang->line('select');
+		$data['form_submit_message'] = $this->lang->line('form_submit_message');
 
 		$this->load->view('form', $data);
 	}
@@ -149,29 +150,37 @@ class Form extends MY_Controller
 		$fileUpload = (isset($_FILES['picture_of_imei_code']['name']) && !empty($_FILES['picture_of_imei_code']['name'])) ? true : false;
 
 		if ($this->form_validation->run() === true && $fileUpload) {
-			$pdfPath = $rootDOC . '/upload/pdf/IMEI-' . $this->input->post('imei_code') . '-' .  $this->input->post('license_plate') . '-' . $this->input->post('company_name') . '.pdf';
-
 			$imageSRC = $this->upload();
 
-			$this->createPDF($imageSRC, $rootDOC, $pdfPath);
+			if ($imageSRC['picture_of_imei_code']['success']) {
+				$fileName = 'IMEI-' . $this->input->post('imei_code') . '-' .  $this->input->post('license_plate') . '-' . $this->input->post('company_name') . '.pdf';
+				$pdfPath = $rootDOC . '/upload/pdf/' . $fileName;
 
-			$this->removeImage($imageSRC);
-			$validator['success'] = $this->sendEmail($configFile, $rootDOC, $pdfPath);
+				$this->createPDF($imageSRC, $rootDOC, $pdfPath);
 
-			$validator['messages'] = $validator['success'] ? $this->lang->line('submit_successful') : $this->lang->line('server_error');
+				$this->removeImage($imageSRC);
+				$validator['success'] = $this->sendEmail($configFile, $rootDOC, $pdfPath);
 
-			$params = array(
-				'file' => $rootDOC . '/upload/pdf/IMEI-' . $this->input->post('imei_code') . '.pdf',
-				'filename' => 'IMEI-' . $this->input->post('imei_code') . '.pdf',
-				'mimetype' => 'application/pdf',
-				'data' => chunk_split(base64_encode(file_get_contents($pdfPath)))
-			);
+				$validator['messages'] = $validator['success'] ? $this->lang->line('submit_successful') : $this->lang->line('server_error');
+				$validator['success'] ? null : ($validator['error'] = TRUE);
 
-			$this->httpPost($configFile['gscript_URL'], $params);
+				$params = array(
+					'file' => $rootDOC . '/upload/pdf/IMEI-' . $this->input->post('imei_code') . '.pdf',
+					'filename' => $fileName,
+					'mimetype' => 'application/pdf',
+					'data' => chunk_split(base64_encode(file_get_contents($pdfPath)))
+				);
 
-			$this->removePDF($pdfPath);
+				$this->httpPost($configFile['gscript_URL'], $params);
 
-			$validator['success'] = TRUE;
+				$this->removePDF($pdfPath);
+
+				$validator['success'] = TRUE;
+			} else {
+				$validator['messages'] = $this->lang->line('server_error');
+				$validator['error'] = TRUE;
+				$validator['success'] = TRUE;
+			}
 		} else {
 			$validator['success'] = false;
 			foreach ($_POST as $key => $value) {
@@ -278,13 +287,13 @@ class Form extends MY_Controller
 		$pdf->Cell(0, 7, $this->input->post('tracker_placement'), 0, 1);
 
 		$pdf->Cell(0, 7,  $this->lang->line('picture_of_imei_code'), 0, 1);
-		$pdf->Image($imageSRC['picture_of_imei_code']['url'], 25, null, 100, 60);
+		$pdf->Image($imageSRC['picture_of_imei_code']['url'], 25, null, 0, 60);
 
 		if (isset($imageSRC['picture_of_license_plate']['url'])) {
 			$pdf->Ln(3);
 
 			$pdf->Cell(0, 7, $this->lang->line('license_plate_or_chassis_number'), 0, 1);
-			$pdf->Image($imageSRC['picture_of_license_plate']['url'], 25, null, 100, 60);
+			$pdf->Image($imageSRC['picture_of_license_plate']['url'], 25, null, 0, 60);
 		}
 
 		$pdf->Output('F', $pdfPath);
@@ -314,10 +323,49 @@ class Form extends MY_Controller
 			$emailAddress .= ', ' . $this->input->post('email_address_2');
 		}
 
+		$subject = str_replace("%IMEI%", $this->input->post('imei_code'), $this->lang->line('email_subject'));
+		$subject = str_replace("%LICENSE%", $this->input->post('license_plate'), $subject);
+
+		$body = str_replace("(%LANG_installation_company%)", $this->lang->line('installation_company'), $this->lang->line('email_body'));
+		$body = str_replace("(%installation_company%)", $this->input->post('installation_company'), $body);
+
+		$body = str_replace("(%LANG_engineer_name%)", $this->lang->line('engineer_name'), $body);
+		$body = str_replace("(%engineer_name%)", $this->input->post('engineer_name'), $body);
+
+		$body = str_replace("(%LANG_engineer_number%)", $this->lang->line('telephone_number_engineer'), $body);
+		$body = str_replace("(%engineer_number%)", $this->input->post('engineer_number'), $body);
+
+		$body = str_replace("(%LANG_email_address%)", $this->lang->line('email_address'), $body);
+		$body = str_replace("(%email_address%)", $this->input->post('email_address'), $body);
+
+		$body = str_replace("(%LANG_email_address_2%)", $this->lang->line('email_address'), $body);
+		$body = str_replace("(%email_address_2%)", $this->input->post('email_address_2'), $body);
+
+		$body = str_replace("(%LANG_company_name%)", $this->lang->line('company_name'), $body);
+		$body = str_replace("(%company_name%)", $this->input->post('company_name'), $body);
+
+		$body = str_replace("(%LANG_order_number%)", $this->lang->line('order_number'), $body);
+		$body = str_replace("(%order_number%)", $this->input->post('order_number'), $body);
+
+		$body = str_replace("(%LANG_license_plate%)", $this->lang->line('license_plate'), $body);
+		$body = str_replace("(%license_plate%)", $this->input->post('license_plate'), $body);
+
+		$body = str_replace("(%LANG_mileage%)", $this->lang->line('mileage'), $body);
+		$body = str_replace("(%mileage%)", $this->input->post('mileage'), $body);
+
+		$body = str_replace("(%LANG_imei_code%)", $this->lang->line('imei_or_activation_code'), $body);
+		$body = str_replace("(%imei_code%)", $this->input->post('imei_code'), $body);
+
+		$body = str_replace("(%LANG_start_block%)", $this->lang->line('start_block'), $body);
+		$body = str_replace("(%start_block%)", $this->input->post('start_block'), $body);
+
+		$body = str_replace("(%LANG_tracker_placement%)", $this->lang->line('tracker_placement_in_vehicle'), $body);
+		$body = str_replace("(%tracker_placement%)", $this->input->post('tracker_placement'), $body);
+
 		$this->email->from($configFile['smtp_user'], 'Rental Tracker');
 		$this->email->to($emailAddress);
-		$this->email->subject(str_replace("%IMEI%", $this->input->post('imei_code'), $this->lang->line('email_subject')));
-		$this->email->message($this->lang->line('email_body'));
+		$this->email->subject($subject);
+		$this->email->message($body);
 		$this->email->attach($pdfPath);
 
 		if ($this->email->send()) {
@@ -326,16 +374,18 @@ class Form extends MY_Controller
 			$success = false;
 		}
 
-		$this->email->from($configFile['smtp_user'], 'Rental Tracker');
-		$this->email->to('info@rentaltracker.nl');
-		$this->email->subject(str_replace("%IMEI%", $this->input->post('imei_code'), $this->lang->line('email_subject')));
-		$this->email->message($this->lang->line('email_body'));
-		$this->email->attach($pdfPath);
+		if (!empty($configFile['default_mail'])) {
+			$this->email->from($configFile['smtp_user'], 'Rental Tracker');
+			$this->email->to($configFile['default_mail']);
+			$this->email->subject($subject);
+			$this->email->message($body);
+			$this->email->attach($pdfPath);
 
-		if ($this->email->send()) {
-			$success = true;
-		} else {
-			$success = false;
+			if ($this->email->send()) {
+				$success = true;
+			} else {
+				$success = false;
+			}
 		}
 
 		return $success;
