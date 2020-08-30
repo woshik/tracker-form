@@ -32,7 +32,7 @@
         <div class="container-contact100">
             <div class="wrap-contact100">
                 <?= form_open($lang . '/form/submit', ['class' => 'contact100-form', 'id' => 'installation-form']); ?>
-                <div class="form-success-message" style="opacity: 0;"><?= $form_submit_message ?></div>
+                <div class="form-success-message" style="display: none;"><?= $form_submit_message ?></div>
                 <span class="contact100-form-title ">
                     <?= $installation_form ?>
                 </span>
@@ -118,12 +118,12 @@
                 <p class="text-important"><?= $important ?></p>
                 <div class="wrap-input100 validate-input file-wrap">
                     <label class="label-input100 file-input-label" id="for_picture_of_imei_code" for="picture_of_imei_code"><?= $upload_picture_of_imei_code ?> (<?= $required ?>)</label>
-                    <input class="input100" type="file" name="picture_of_imei_code" accept=".png,.jpg,.jpeg" id="picture_of_imei_code" autocomplete="off">
+                    <input class="input100" type="file" name="picture_of_imei_code" accept=".jpg,.jpeg" id="picture_of_imei_code" autocomplete="off">
                 </div>
 
                 <div class="wrap-input100 validate-input file-wrap">
                     <label class="label-input100 file-input-label" id="for_picture_of_license_plate" for="picture_of_license_plate"><?= $upload_image_of_license_plate_or_chassis_number ?></label>
-                    <input class="input100" type="file" name="picture_of_license_plate" accept=".png,.jpg,.jpeg" id="picture_of_license_plate" autocomplete="off">
+                    <input class="input100" type="file" name="picture_of_license_plate" accept=".jpg,.jpeg" id="picture_of_license_plate" autocomplete="off">
                 </div>
 
                 <div class="button-wrap">

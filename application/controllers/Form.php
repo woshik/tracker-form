@@ -7,6 +7,8 @@ class Form extends MY_Controller
 	{
 		parent::__construct();
 		$this->load->library('pdf');
+		// loading the suit model	
+		$this->load->model('model_form');
 	}
 
 	public function index()
@@ -45,9 +47,7 @@ class Form extends MY_Controller
 
 	public function submit()
 	{
-
 		$rootDOC = realpath(__DIR__ . '/../../');
-		$configFile = require_once(__DIR__ . '/../../config.php');
 
 		$validator = array('success' => false, 'messages' => array());
 
@@ -150,6 +150,9 @@ class Form extends MY_Controller
 		$fileUpload = (isset($_FILES['picture_of_imei_code']['name']) && !empty($_FILES['picture_of_imei_code']['name'])) ? true : false;
 
 		if ($this->form_validation->run() === true && $fileUpload) {
+
+			$this->config = require_once($rootDOC . '/config.php');
+
 			$imageSRC = $this->upload();
 
 			if ($imageSRC['picture_of_imei_code']['success']) {
@@ -158,29 +161,31 @@ class Form extends MY_Controller
 
 				$this->createPDF($imageSRC, $rootDOC, $pdfPath);
 
-				$this->removeImage($imageSRC);
-				$validator['success'] = $this->sendEmail($configFile, $rootDOC, $pdfPath);
+				// get email content
+				$emailContent = $this->getEmailContent();
+				$emailContent['pdf'] = $pdfPath;
 
-				$validator['messages'] = $validator['success'] ? $this->lang->line('submit_successful') : $this->lang->line('server_error');
-				$validator['success'] ? null : ($validator['error'] = TRUE);
+				if ($this->model_form->create($emailContent)) {
+					$validator['success'] = $this->sendEmail($emailContent);
 
-				$params = array(
-					'file' => $rootDOC . '/upload/pdf/IMEI-' . $this->input->post('imei_code') . '.pdf',
-					'filename' => $fileName,
-					'mimetype' => 'application/pdf',
-					'data' => chunk_split(base64_encode(file_get_contents($pdfPath)))
-				);
+					$validator['messages'] = $validator['success'] ? $this->lang->line('submit_successful') : $this->lang->line('server_error');
+					$validator['success'] ? null : ($validator['error'] = TRUE);
 
-				$this->httpPost($configFile['gscript_URL'], $params);
-
-				$this->removePDF($pdfPath);
-
-				$validator['success'] = TRUE;
+					$validator['success'] = TRUE;
+				} else {
+					$validator['messages'] = $this->lang->line('server_error');
+					$validator['details'] = "database error";
+					$validator['error'] = TRUE;
+					$validator['success'] = TRUE;
+				}
 			} else {
 				$validator['messages'] = $this->lang->line('server_error');
+				$validator['details'] = "image not upload";
 				$validator['error'] = TRUE;
 				$validator['success'] = TRUE;
 			}
+
+			$this->removeImage($imageSRC);
 		} else {
 			$validator['success'] = false;
 			foreach ($_POST as $key => $value) {
@@ -198,7 +203,7 @@ class Form extends MY_Controller
 		$result_array = array();
 
 		$config['upload_path'] 		= 'upload/picture/';
-		$config['allowed_types'] 	= 'jpg|jpeg|png|JPG|JPEG|PNG';
+		$config['allowed_types'] 	= 'jpg|jpeg|JPG|JPEG';
 		$config['file_name']		= strtoupper(md5(uniqid(mt_rand(), true)));
 		$config['max_size']			= 5000;
 		$config['encrypt_name']		= true;
@@ -209,15 +214,41 @@ class Form extends MY_Controller
 
 		foreach ($file as $key => $value) {
 
-			if ($this->upload->do_upload($key)) {
-				$result_array[$key]['url'] = $this->upload->data('full_path');
-				$result_array[$key]['success'] = true;
-			} else {
+			if (!$this->upload->do_upload($key)) {
 				$result_array[$key]['success'] = false;
+			} else {
+				$uploadedImage = $this->upload->data();
+
+				if ($this->compressImage($uploadedImage['full_path'], $uploadedImage['full_path'], 40)) {
+					$result_array[$key]['url'] = $this->upload->data('full_path');
+					$result_array[$key]['success'] = true;
+				} else {
+					$result_array[$key]['success'] = false;
+				}
 			}
 		}
 
 		return $result_array;
+	}
+
+	private function compressImage($source, $destination, $quality)
+	{
+		$info = getimagesize($source);
+
+		if ($info['mime'] == 'image/jpeg')
+			$image = imagecreatefromjpeg($source);
+
+		list($width_min, $height_min) = getimagesize($source);
+
+		$newWidth = 350;
+
+		$newHeight = ($height_min / $width_min) * $newWidth;
+
+		$tmp_min = imagecreatetruecolor($newWidth, $newHeight);
+
+		imagecopyresampled($tmp_min, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width_min, $height_min);
+
+		return imagejpeg($image, $destination, $quality) ? TRUE : FALSE;
 	}
 
 	private function createPDF($imageSRC, $rootDOC, $pdfPath)
@@ -299,17 +330,15 @@ class Form extends MY_Controller
 		$pdf->Output('F', $pdfPath);
 	}
 
-	private function sendEmail($configFile, $rootDOC, $pdfPath)
+	private function sendEmail($emailContent)
 	{
-		$success = FALSE;
-
 		$config = array();
 		$config['protocol']     	= 'smtp';
-		$config['smtp_host']    	= $configFile['smtp_host'];
+		$config['smtp_host']    	= $this->config['smtp_host'];
 		$config['smtp_crypto']  	= 'ssl';
-		$config['smtp_port']    	= $configFile['smtp_port'];
-		$config['smtp_user']    	= $configFile['smtp_user'];
-		$config['smtp_pass']    	= $configFile['smtp_pass'];
+		$config['smtp_port']    	= $this->config['smtp_port'];
+		$config['smtp_user']    	= $this->config['smtp_user'];
+		$config['smtp_pass']    	= $this->config['smtp_pass'];
 		$config['mailtype']     	= 'text';
 		$config['charset']      	= 'iso-8859-1';
 		$config['wordwrap']     	= 'TRUE';
@@ -323,6 +352,26 @@ class Form extends MY_Controller
 			$emailAddress .= ', ' . $this->input->post('email_address_2');
 		}
 
+		$this->email->from($this->config['smtp_user'], 'Rental Tracker');
+		$this->email->to($emailAddress);
+		$this->email->subject($emailContent['subject']);
+		$this->email->message($emailContent['body']);
+		$this->email->attach($emailContent['pdf']);
+
+		return $this->email->send() ? TRUE : FALSE;
+	}
+
+	private function removeImage($imageSRC)
+	{
+		foreach ($imageSRC as $key => $value) {
+			if (isset($value['url'])) {
+				unlink($value['url']);
+			}
+		}
+	}
+
+	private function getEmailContent()
+	{
 		$subject = str_replace("%IMEI%", $this->input->post('imei_code'), $this->lang->line('email_subject'));
 		$subject = str_replace("%LICENSE%", $this->input->post('license_plate'), $subject);
 
@@ -362,58 +411,9 @@ class Form extends MY_Controller
 		$body = str_replace("(%LANG_tracker_placement%)", $this->lang->line('tracker_placement_in_vehicle'), $body);
 		$body = str_replace("(%tracker_placement%)", $this->input->post('tracker_placement'), $body);
 
-		$this->email->from($configFile['smtp_user'], 'Rental Tracker');
-		$this->email->to($emailAddress);
-		$this->email->subject($subject);
-		$this->email->message($body);
-		$this->email->attach($pdfPath);
-
-		if ($this->email->send()) {
-			$success = true;
-		} else {
-			$success = false;
-		}
-
-		if (!empty($configFile['default_mail'])) {
-			$this->email->from($configFile['smtp_user'], 'Rental Tracker');
-			$this->email->to($configFile['default_mail']);
-			$this->email->subject($subject);
-			$this->email->message($body);
-			$this->email->attach($pdfPath);
-
-			if ($this->email->send()) {
-				$success = true;
-			} else {
-				$success = false;
-			}
-		}
-
-		return $success;
-	}
-
-	private function removeImage($imageSRC)
-	{
-		foreach ($imageSRC as $key => $value) {
-			if (isset($value['url'])) {
-				unlink($value['url']);
-			}
-		}
-	}
-
-	private function removePDF($src)
-	{
-		if (isset($src)) {
-			unlink($src);
-		}
-	}
-
-	private function httpPost($url, $data)
-	{
-		$curl = curl_init($url);
-		curl_setopt($curl, CURLOPT_POST, true);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_exec($curl);
-		curl_close($curl);
+		return array(
+			'subject' => $subject,
+			'body' => $body
+		);
 	}
 }
